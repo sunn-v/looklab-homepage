@@ -46,11 +46,8 @@ feature/* ──PR──▶ preview trên workers.dev
 
 Cấu hình lần đầu (dùng chung tài khoản Cloudflare với app):
 
-1. Trong repo app, deploy bản đã chuyển production sang `app.looklab.space` trước. Custom domain `looklab.space`
-   chỉ gắn được cho một Worker, nên phải gỡ khỏi Worker `looklab` rồi mới gắn cho `looklab-homepage`.
-2. Tạo API token (My Profile → API Tokens → _Create Token_ → mẫu _Edit Cloudflare Workers_): Account Resources là
-   tài khoản của LookLab (không giới hạn theo Worker), Zone Resources là `looklab.space`.
-3. GitHub → Settings → Secrets and variables → Actions: Secrets `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`;
-   Variables `DEPLOY_ENABLED` = `true`. Preview theo PR chạy được từ đây.
-4. Chỉ khi `looklab.space` đã gỡ khỏi Worker `looklab`: thêm Variable `DOMAIN_READY` = `true`, rồi chạy tay workflow
-   **Deploy**. Thiếu biến này thì production bỏ qua bước deploy, vì `wrangler deploy` sẽ lặng lẽ giành domain khỏi app.
+1. Worker `looklab-homepage` phải có sẵn: token CI có role Workers Editor, không tạo được Worker mới
+   (Dashboard → Workers & Pages → Create → Hello World, đặt tên `looklab-homepage`, không gắn domain).
+2. GitHub → Settings → Secrets and variables → Actions: Secrets `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`
+   (dùng lại token của app); Variables `DEPLOY_ENABLED` = `true`.
+3. Merge vào `main`, hoặc chạy tay workflow **Deploy**.

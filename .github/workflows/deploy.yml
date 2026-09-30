@@ -2,8 +2,7 @@ name: Deploy
 
 #   pull request vào main → preview  pr-<số PR>-looklab-homepage.<tài khoản>.workers.dev
 #   push vào main         → production https://looklab.space
-# Cần: Secrets CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID · Variables DEPLOY_ENABLED = true,
-#       DOMAIN_READY = true (chỉ đặt khi looklab.space đã gỡ khỏi Worker looklab của app)
+# Cần: Secrets CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID · Variables DEPLOY_ENABLED = true
 on:
   pull_request:
     branches: [main]
@@ -42,13 +41,8 @@ jobs:
           url=$(grep -oE 'https://pr-[^ ]+workers\.dev' out.log | head -1)
           echo "Preview: ${url:-xem log bước này}" >> "$GITHUB_STEP_SUMMARY"
           if [ -n "$url" ]; then echo "::notice title=Preview::$url"; fi
-      # wrangler deploy lặng lẽ giành custom domain từ Worker khác, và API không cho biết chắc domain đang thuộc ai.
-      # Nên production chỉ deploy khi Variable DOMAIN_READY = true, đặt sau khi đã gỡ looklab.space khỏi Worker looklab.
-      - name: Chờ chuyển domain
-        if: github.event_name != 'pull_request' && vars.DOMAIN_READY != 'true'
-        run: echo "::notice title=Chưa deploy production::Gỡ looklab.space khỏi Worker looklab, đặt Variable DOMAIN_READY = true rồi chạy lại."
       - name: Deploy production
-        if: github.event_name != 'pull_request' && vars.DOMAIN_READY == 'true'
+        if: github.event_name != 'pull_request'
         run: |
           set -o pipefail
           pnpm exec wrangler deploy 2>&1 | tee out.log \
