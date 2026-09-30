@@ -6,43 +6,15 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { CONTACT_EMAIL, LEGAL, LEGAL_UPDATED, type LegalDoc } from './content/legal.ts';
 import { APP_URL, LANGS, SITE, SITE_URL, type Lang } from './content/site.ts';
-import { ICONS, type IconName } from './icons.ts';
+import { homeBody } from './home.ts';
+import { esc, icon, pathOf, tag, type Page } from './html.ts';
+
+export { esc, pathOf };
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const out = join(root, 'dist');
 
-type Page = 'home' | 'privacy' | 'terms';
-
 // ── Tiện ích ──
-
-const ESC: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
-/** Escape mọi chữ lấy từ content trước khi đưa vào HTML */
-export const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ESC[c]!);
-
-/** Đường dẫn của một trang theo ngôn ngữ: EN không có tiền tố, VI nằm dưới /vi/ */
-export function pathOf(page: Page, lang: Lang) {
-  const prefix = lang === 'en' ? '' : `/${lang}`;
-  return page === 'home' ? `${prefix}/` : `${prefix}/${page}`;
-}
-
-function icon(name: string, size = 24, weight = 1.5) {
-  const parts = ICONS[name as IconName];
-  if (!parts) throw new Error(`Không có icon "${name}"`);
-  const body = parts
-    .map(
-      ([tag, attrs]) =>
-        `<${tag} ${Object.entries(attrs)
-          .map(([k, v]) => `${k}="${v}"`)
-          .join(' ')}/>`,
-    )
-    .join('');
-  return `<svg class="sh-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${weight}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${body}</svg>`;
-}
-
-const tag = (text: string, tone?: 'archived') =>
-  `<span class="sh-tag${tone ? ` sh-tag-${tone}` : ''}"><span class="sh-tag-eyelet" aria-hidden="true"></span>${esc(text)}</span>`;
-
-const badge = (name: string) => `<span class="badge" aria-hidden="true">${icon(name, 22)}</span>`;
 
 /** Link email liên hệ trong văn bản pháp lý thành mailto (sau khi đã escape) */
 const withMailto = (s: string) =>
@@ -101,7 +73,7 @@ function layout(opts: { lang: Lang; page: Page | '404'; title: string; descripti
     <link rel="stylesheet" href="/styles.css?v=${cssVersion}">
     ${standalone}
   </head>
-  <body>
+  <body${page === 'home' ? ' class="home"' : ''}>
     <header class="wrap site-header">
       <a class="brand" href="${home}" aria-label="${esc(t.nav.home)}">
         <img src="/icon.svg" alt="" width="32" height="32">
@@ -131,111 +103,6 @@ ${opts.body}
 }
 
 // ── Nội dung từng trang ──
-
-function homeBody(lang: Lang) {
-  const t = SITE[lang];
-  // ?lang= để app mở đúng ngôn ngữ của trang người dùng đang đọc
-  const signup = `${APP_URL}/signup?lang=${lang}`;
-  const cards = t.demo.items
-    .map(
-      (it) => `
-            <div class="sh-card">
-              <div class="sh-card-photo">
-                <span class="sh-ph sh-ph-fill" aria-hidden="true">${icon(it.icon, 56, (1.5 * 24 * 1.15) / 56)}</span>
-                ${it.inUse ? `<div class="sh-card-band"><span>${esc(it.inUse)}</span></div>` : ''}
-              </div>
-              <div class="sh-card-text">
-                <div class="sh-card-name">${esc(it.name)}</div>
-                <div class="sh-card-meta">${esc(it.meta)}</div>
-              </div>
-            </div>`,
-    )
-    .join('');
-  const hoursLeft = 18.4;
-  const ticks = Array.from(
-    { length: 24 },
-    (_, i) => `<span class="sh-tick${i < Math.ceil(hoursLeft) ? ' sh-tick-on' : ''}"></span>`,
-  ).join('');
-
-  return `      <section class="wrap hero">
-        <div class="hero-text">
-          ${tag(t.hero.eyebrow)}
-          <h1>${esc(t.hero.title)}</h1>
-          <p class="lead">${esc(t.hero.lead)}</p>
-          <div class="actions">
-            <a class="sh-btn sh-btn-primary" href="${signup}">${esc(t.hero.cta)}</a>
-            <a class="sh-btn sh-btn-tonal" href="${APP_URL}/login?lang=${lang}">${esc(t.hero.secondary)}</a>
-          </div>
-          <p class="note">${icon('download', 18)}<span>${esc(t.hero.note)}</span></p>
-        </div>
-        <figure class="demo">
-          <figcaption class="demo-head">${tag(t.demo.label)}<span class="demo-summary">${esc(t.demo.summary)}</span></figcaption>
-          <div class="demo-grid">${cards}
-          </div>
-          <div class="sh-count">
-            <div class="sh-count-head">
-              <span class="sh-count-label">${esc(t.demo.timeLeft)}</span>
-              <span class="sh-count-due">${esc(t.demo.back)}</span>
-            </div>
-            <div class="sh-count-time">18:24<span class="sh-count-unit">${esc(t.demo.unit)}</span></div>
-            <div class="sh-count-ticks" role="progressbar" aria-label="${esc(t.demo.progress)}" aria-valuemin="0" aria-valuemax="24" aria-valuenow="${hoursLeft}" aria-valuetext="18:24">${ticks}</div>
-            <div class="sh-count-scale" aria-hidden="true"><span>0h</span><span>12h</span><span>24h</span></div>
-          </div>
-        </figure>
-      </section>
-
-      <section class="wrap block" aria-labelledby="how">
-        <h2 id="how">${esc(t.how.title)}</h2>
-        <ol class="steps">
-${t.how.steps
-  .map(
-    (s, i) => `          <li class="step">
-            <div class="step-top">${badge(s.icon)}<span class="step-no" aria-hidden="true">0${i + 1}</span></div>
-            <h3>${esc(s.title)}</h3>
-            <p>${esc(s.body)}</p>
-          </li>`,
-  )
-  .join('\n')}
-        </ol>
-      </section>
-
-      <section class="band" aria-labelledby="features">
-        <div class="wrap">
-          <h2 id="features">${esc(t.features.title)}</h2>
-          <ul class="features">
-${t.features.list
-  .map(
-    (f) =>
-      `            <li class="feature">${badge(f.icon)}<div><h3>${esc(f.title)}</h3><p>${esc(f.body)}</p></div></li>`,
-  )
-  .join('\n')}
-          </ul>
-        </div>
-      </section>
-
-      <section class="wrap pair">
-        <div class="panel panel-primary">
-          <h2>${esc(t.privacy.title)}</h2>
-          <p>${esc(t.privacy.body)}</p>
-          <p class="panel-links">
-            <a class="link" href="${pathOf('privacy', lang)}">${esc(t.legal.privacy)}</a>
-            <a class="link" href="${pathOf('terms', lang)}">${esc(t.legal.terms)}</a>
-          </p>
-        </div>
-        <div class="panel">
-          <h2>${esc(t.later.title)}</h2>
-          <p class="muted">${esc(t.later.lead)}</p>
-          <!-- Nhãn viền đứt: thứ chưa có, giống nhãn món đồ đã lưu trữ trong app -->
-          <ul class="tags">${t.later.list.map((x) => `<li>${tag(x, 'archived')}</li>`).join('')}</ul>
-        </div>
-      </section>
-
-      <section class="wrap final">
-        <h2>${esc(t.final.title)}</h2>
-        <p class="lead">${esc(t.final.body)}</p>
-        <a class="sh-btn sh-btn-primary" href="${signup}">${icon('plus', 20)}${esc(t.hero.cta)}</a>
-      </section>`;
-}
 
 function legalBody(lang: Lang, doc: 'privacy' | 'terms', content: LegalDoc) {
   const t = SITE[lang];
@@ -293,7 +160,7 @@ export function build() {
   rmSync(out, { recursive: true, force: true });
   cpSync(join(root, 'public'), out, { recursive: true });
 
-  const css = ['tokens.css', 'components.css', 'site.css']
+  const css = ['tokens.css', 'components.css', 'site.css', 'home.css']
     .map((f) => readFileSync(join(root, 'src', f), 'utf8'))
     .join('\n');
   writeFileSync(join(out, 'styles.css'), css);
@@ -339,6 +206,7 @@ export function build() {
   const csp = [
     "default-src 'none'",
     "style-src 'self'",
+    "font-src 'self'",
     "img-src 'self'",
     `script-src ${scriptHash}`,
     "base-uri 'none'",
@@ -349,6 +217,7 @@ export function build() {
     join(out, '_headers'),
     `/*\n  Content-Security-Policy: ${csp}\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n\n` +
       `/styles.css\n  Cache-Control: public, max-age=31536000, immutable\n\n` +
+      `/fonts/*\n  Cache-Control: public, max-age=31536000, immutable\n\n` +
       `/sw.js\n  Cache-Control: no-cache\n`,
   );
   writeFileSync(join(out, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${SITE_URL}/sitemap.xml\n`);

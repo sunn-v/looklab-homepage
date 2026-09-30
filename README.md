@@ -32,6 +32,8 @@ src/components.css    Button, Tag, ItemCard, Countdown: chép từ app (src/styl
 src/icons.ts          Bộ icon: chép từ app (src/ui/icons.ts)
 public/_redirects     Link cũ của app ở looklab.space → app.looklab.space
 public/sw.js          Gỡ service worker của PWA cũ từng cài ở looklab.space
+public/fonts/         Bricolage Grotesque (SIL OFL 1.1) cho tiêu đề, tự host vì CSP chỉ cho font từ 'self'
+src/home.ts, home.css Trang chủ: thanh treo đồ, băng chữ chạy, thẻ nhãn treo, lưới tính năng (chỉ CSS, tắt khi giảm chuyển động)
 ```
 
 Sửa cách app thu thập hay lưu dữ liệu thì sửa `src/content/legal.ts` và đổi `LEGAL_UPDATED`. Đổi bảng màu, component
