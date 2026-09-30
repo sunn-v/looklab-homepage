@@ -52,6 +52,9 @@ jobs:
             echo "::error title=Token không truy cập được account::$(jq -c .errors <<<"$res")"
             exit 1
           fi
+          acct=$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts" | jq -r '[.result[]?.id] | join(", ")')
+          echo "::notice title=Account đang deploy vào::Worker có sẵn: ${acct:-(không có hoặc token không đọc được)}"
           owner=$(jq -r '.result[0].service // empty' <<<"$res")
           if [ -n "$owner" ] && [ "$owner" != "looklab-homepage" ]; then
             echo "::error title=looklab.space đang thuộc Worker $owner::Chuyển app sang app.looklab.space và gỡ looklab.space khỏi $owner trước (README của sunn-v/looklab)."
