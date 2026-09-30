@@ -1,0 +1,29 @@
+{
+  "name": "looklab-homepage",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "build": "node src/build.ts",
+    "dev": "node src/build.ts && wrangler dev",
+    "test": "node --test test/*.test.ts",
+    "typecheck": "tsc",
+    "format": "prettier --write .",
+    "deploy": "node src/build.ts && wrangler deploy"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.4",
+    "prettier": "^3.9.9",
+    "typescript": "~6.0.3",
+    "wrangler": "^4.142.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "workerd"
+    ]
+  }
+}

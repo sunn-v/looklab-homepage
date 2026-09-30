@@ -1,0 +1,16 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  // Chỉ có static assets, không có Worker script: HTML sinh sẵn trong dist/ bởi `pnpm build`
+  "name": "looklab-homepage",
+  "compatibility_date": "2026-08-15",
+  "assets": {
+    "directory": "./dist",
+    // /privacy → privacy.html, /vi/ → vi/index.html; đường dẫn không có → 404.html (mã 404)
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page",
+  },
+  // Production: https://looklab.space. App nằm ở app.looklab.space (repo sunn-v/looklab).
+  "routes": [{ "pattern": "looklab.space", "custom_domain": true }],
+  // Mỗi PR có bản preview trên workers.dev
+  "preview_urls": true,
+}

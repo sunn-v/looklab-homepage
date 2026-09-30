@@ -1,0 +1,54 @@
+@layer base, components;
+
+/* Token màu, khoảng cách, bo góc, font: chép từ app (sunn-v/looklab, src/styles/tokens.css, sinh từ design/tokens.json).
+   Đổi bảng màu ở app thì chép lại khối này. */
+:root {
+  --paper: #f3efe7;
+  --paper-raised: #fdfbf7;
+  --paper-tint: #eae5db;
+  --shade: #e1dbcf;
+  --ink: #1a1b21;
+  --ink-muted: #4f505a;
+  --line: #e6e0d5;
+  --line-control: #76767f;
+  --primary: #2448b8;
+  --on-primary: #ffffff;
+  --primary-container: #dde4fb;
+  --on-primary-container: #0e225f;
+  --glass: #fdfbf7c7;
+  --glass-edge: #1a1b2114;
+  --inuse: #3f6f52;
+  --on-inuse: #ffffff;
+  --inuse-soft: #dcebdd;
+  --inuse-ink: #2a5238;
+  --inuse-track: #b3d2ba;
+  --danger: #ba1a1a;
+  --danger-soft: #ffdad6;
+  --on-danger: #ffffff;
+  --scrim: #1a1b2166;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --stroke-hair: 1px;
+  --stroke-control: 1px;
+  --stroke-strong: 2px;
+
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-full: 9999px;
+  --font-display:
+    ui-rounded, 'SF Pro Rounded', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI Variable Display', 'Segoe UI',
+    Roboto, 'Helvetica Neue', sans-serif;
+  --font-sans:
+    system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI Variable Text', 'Segoe UI', Roboto, 'Helvetica Neue',
+    'Noto Sans', sans-serif;
+  --font-num:
+    ui-rounded, 'SF Pro Rounded', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --shadow-float: 0 1px 2px rgba(26, 27, 33, 0.06), 0 6px 16px rgba(26, 27, 33, 0.08);
+}

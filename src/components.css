@@ -1,0 +1,278 @@
+/* Style component chép từ app (sunn-v/looklab, src/styles/components.css): Button, Tag, ItemCard, Placeholder, Countdown. Chỉ dùng biến token. */
+@layer components {
+  /* focus: one rule for every control */
+  .sh-btn:focus-visible,
+  .sh-chip:focus-visible,
+  .sh-tab:focus-visible,
+  .sh-card:focus-visible,
+  .sh-field input:focus-visible,
+  .sh-field textarea:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
+  /* Icon */
+  .sh-icon {
+    display: block;
+    flex-shrink: 0;
+  }
+
+  /* Button: pill */
+  .sh-btn {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    height: 48px;
+    padding: 0 var(--space-6);
+    border: var(--stroke-control) solid var(--line-control);
+    border-radius: var(--radius-full);
+    background: transparent;
+    color: var(--primary);
+    font: 600 15px/1 var(--font-sans);
+    text-decoration: none;
+    cursor: pointer;
+    white-space: nowrap;
+    transition:
+      background-color 0.2s ease-out,
+      border-color 0.2s ease-out;
+  }
+  .sh-btn .sh-icon {
+    margin-left: -4px;
+  }
+  .sh-btn-primary {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: var(--on-primary);
+  }
+  .sh-btn-tonal {
+    background: var(--primary-container);
+    border-color: var(--primary-container);
+    color: var(--on-primary-container);
+  }
+  .sh-btn-signal {
+    background: var(--inuse);
+    border-color: var(--inuse);
+    color: var(--on-inuse);
+  }
+  .sh-btn-return {
+    background: var(--inuse-soft);
+    border-color: var(--inuse-soft);
+    color: var(--inuse-ink);
+  }
+  .sh-btn-ghost {
+    background: transparent;
+    border-color: transparent;
+  }
+  .sh-btn-danger {
+    background: var(--danger-soft);
+    border-color: var(--danger-soft);
+    color: var(--danger);
+  }
+  .sh-btn-danger-solid {
+    background: var(--danger);
+    border-color: var(--danger);
+    color: var(--on-danger);
+  }
+  .sh-btn-sm {
+    height: 44px;
+    padding: 0 var(--space-5);
+    font-size: 14px;
+  }
+  .sh-btn-block {
+    display: flex;
+    width: 100%;
+  }
+  .sh-btn:disabled,
+  .sh-btn[aria-disabled='true'] {
+    background: var(--shade);
+    border-color: var(--shade);
+    color: var(--ink-muted);
+    cursor: not-allowed;
+  }
+
+  /* Tag: pill hang tag */
+  .sh-tag {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 28px;
+    padding: 0 12px 0 10px;
+    border-radius: var(--radius-full);
+    background: var(--shade);
+    color: var(--ink);
+    font: 600 12px/1 var(--font-sans);
+    white-space: nowrap;
+  }
+  .sh-tag-eyelet {
+    width: 6px;
+    height: 6px;
+    border: 1.5px solid currentColor;
+    border-radius: var(--radius-full);
+    box-sizing: border-box;
+    opacity: 0.8;
+  }
+  .sh-tag-time {
+    font-family: var(--font-num);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .sh-tag-inuse {
+    background: var(--inuse);
+    color: var(--on-inuse);
+  }
+  .sh-tag-archived {
+    background: transparent;
+    border: var(--stroke-control) dashed var(--line-control);
+    color: var(--ink-muted);
+  }
+
+  /* ItemCard */
+  .sh-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    color: var(--ink);
+    text-decoration: none;
+    min-width: 0;
+    border-radius: var(--radius-lg);
+  }
+  .sh-card-photo {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    background: var(--shade);
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+  }
+  .sh-card-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .sh-ph {
+    box-sizing: border-box;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--shade);
+    color: var(--ink-muted);
+  }
+  .sh-ph .sh-icon {
+    opacity: 0.75;
+  }
+  .sh-ph-fill {
+    position: absolute;
+    inset: 0;
+  }
+  .sh-card-band {
+    position: absolute;
+    left: var(--space-2);
+    bottom: var(--space-2);
+    height: 28px;
+    box-sizing: border-box;
+    padding: 0 12px 0 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: var(--radius-full);
+    background: var(--inuse);
+    color: var(--on-inuse);
+    font: 600 12px/1 var(--font-sans);
+    white-space: nowrap;
+  }
+  .sh-card-band::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    box-sizing: border-box;
+    border: 1.5px solid currentColor;
+    border-radius: var(--radius-full);
+    opacity: 0.8;
+  }
+  .sh-card-band b {
+    font: 600 12px/1 var(--font-num);
+    font-variant-numeric: tabular-nums;
+  }
+  .sh-card-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0 4px;
+  }
+  .sh-card-meta {
+    font: 400 13px/18px var(--font-sans);
+    color: var(--ink-muted);
+  }
+  .sh-card-name {
+    font: 500 15px/20px var(--font-sans);
+  }
+  .sh-card-archived .sh-card-photo img,
+  .sh-card-archived .sh-ph {
+    filter: grayscale(1);
+    opacity: 0.6;
+  }
+
+  /* Countdown */
+  .sh-count {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    background: var(--inuse-soft);
+    border-radius: var(--radius-lg);
+    color: var(--ink);
+  }
+  .sh-count-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-3);
+  }
+  .sh-count-label {
+    font: 600 13px/18px var(--font-sans);
+    color: var(--inuse-ink);
+  }
+  .sh-count-due {
+    font: 500 12px/16px var(--font-num);
+    font-variant-numeric: tabular-nums;
+    color: var(--inuse-ink);
+  }
+  .sh-count-time {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    font: 600 40px/44px var(--font-num);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+  .sh-count-unit {
+    font: 500 13px/16px var(--font-sans);
+    letter-spacing: 0;
+    color: var(--inuse-ink);
+  }
+  .sh-count-ticks {
+    display: grid;
+    grid-template-columns: repeat(24, minmax(0, 1fr));
+    gap: 3px;
+  }
+  .sh-tick {
+    height: 10px;
+    border-radius: var(--radius-full);
+    background: var(--inuse-track);
+  }
+  .sh-tick-on {
+    background: var(--inuse);
+  }
+  .sh-count-scale {
+    display: flex;
+    justify-content: space-between;
+    font: 500 11px/14px var(--font-num);
+    font-variant-numeric: tabular-nums;
+    color: var(--inuse-ink);
+  }
+}

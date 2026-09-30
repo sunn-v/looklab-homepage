@@ -1,0 +1,14 @@
+# App từng chạy ở looklab.space, nay ở app.looklab.space. Chuyển link cũ (bookmark, mail xác nhận,
+# link đặt lại mật khẩu đã gửi) sang app. /privacy và /terms vẫn nằm ở trang này.
+/login              https://app.looklab.space/login            301
+/signup             https://app.looklab.space/signup           301
+/forgot-password    https://app.looklab.space/forgot-password  301
+/reset-password     https://app.looklab.space/reset-password   301
+/closet             https://app.looklab.space/closet           301
+/in-use             https://app.looklab.space/in-use           301
+/account            https://app.looklab.space/account          301
+/account/*          https://app.looklab.space/account/:splat   301
+/items/*            https://app.looklab.space/items/:splat     301
+/img/*              https://app.looklab.space/img/:splat       301
+# 308 giữ nguyên method và body
+/api/*              https://app.looklab.space/api/:splat       308

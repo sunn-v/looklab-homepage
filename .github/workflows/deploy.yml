@@ -1,0 +1,49 @@
+name: Deploy
+
+#   pull request vào main → preview  pr-<số PR>-looklab-homepage.<tài khoản>.workers.dev
+#   push vào main         → production https://looklab.space
+# Cần: Secrets CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID · Variables DEPLOY_ENABLED = true
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || 'production' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  deploy:
+    if: vars.DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    environment: ${{ github.event_name == 'pull_request' && 'preview' || 'production' }}
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+      - run: pnpm build
+      - name: Upload bản preview
+        if: github.event_name == 'pull_request'
+        run: |
+          set -o pipefail
+          pnpm exec wrangler versions upload --preview-alias pr-${{ github.event.number }} 2>&1 | tee out.log \
+            || { echo "::error title=wrangler::$(tail -c 1500 out.log | tr '\n' ' ')"; exit 1; }
+          url=$(grep -oE 'https://pr-[^ ]+workers\.dev' out.log | head -1)
+          echo "Preview: ${url:-xem log bước này}" >> "$GITHUB_STEP_SUMMARY"
+          if [ -n "$url" ]; then echo "::notice title=Preview::$url"; fi
+      - name: Deploy production
+        if: github.event_name != 'pull_request'
+        run: |
+          set -o pipefail
+          pnpm exec wrangler deploy 2>&1 | tee out.log \
+            || { echo "::error title=wrangler deploy::$(tail -c 1500 out.log | tr '\n' ' ')"; exit 1; }
