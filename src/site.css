@@ -104,7 +104,6 @@
 }
 .brand img {
   display: block;
-  border-radius: 10px;
 }
 .brand-name {
   font: 600 19px/1 var(--font-display);
