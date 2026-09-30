@@ -41,6 +41,18 @@ jobs:
           url=$(grep -oE 'https://pr-[^ ]+workers\.dev' out.log | head -1)
           echo "Preview: ${url:-xem log bước này}" >> "$GITHUB_STEP_SUMMARY"
           if [ -n "$url" ]; then echo "::notice title=Preview::$url"; fi
+      # wrangler deploy lặng lẽ giành custom domain từ Worker khác. Còn thấy app ở looklab.space thì dừng.
+      - name: Kiểm tra looklab.space không còn là app
+        if: github.event_name != 'pull_request'
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 https://looklab.space/api/health || true)
+          if [ "$code" = "200" ]; then
+            echo "::error title=looklab.space vẫn là app::Chuyển app sang app.looklab.space trước (README của sunn-v/looklab), rồi deploy lại."
+            exit 1
+          fi
+      - name: Token Cloudflare thấy những tài khoản nào
+        if: github.event_name != 'pull_request'
+        run: pnpm exec wrangler whoami
       - name: Deploy production
         if: github.event_name != 'pull_request'
         run: |
