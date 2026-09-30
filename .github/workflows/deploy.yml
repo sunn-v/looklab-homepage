@@ -41,18 +41,22 @@ jobs:
           url=$(grep -oE 'https://pr-[^ ]+workers\.dev' out.log | head -1)
           echo "Preview: ${url:-xem log bước này}" >> "$GITHUB_STEP_SUMMARY"
           if [ -n "$url" ]; then echo "::notice title=Preview::$url"; fi
-      # wrangler deploy lặng lẽ giành custom domain từ Worker khác. Còn thấy app ở looklab.space thì dừng.
-      - name: Kiểm tra looklab.space không còn là app
+      # wrangler deploy lặng lẽ giành custom domain từ Worker khác: domain còn gắn với Worker khác thì dừng.
+      # Bước này cũng in lỗi thật của API khi token hoặc account ID không khớp.
+      - name: Kiểm tra looklab.space chưa thuộc Worker khác
         if: github.event_name != 'pull_request'
         run: |
-          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 https://looklab.space/api/health || true)
-          if [ "$code" = "200" ]; then
-            echo "::error title=looklab.space vẫn là app::Chuyển app sang app.looklab.space trước (README của sunn-v/looklab), rồi deploy lại."
+          res=$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/domains?hostname=looklab.space")
+          if [ "$(jq -r .success <<<"$res")" != "true" ]; then
+            echo "::error title=Token không truy cập được account::$(jq -c .errors <<<"$res")"
             exit 1
           fi
-      - name: Token Cloudflare thấy những tài khoản nào
-        if: github.event_name != 'pull_request'
-        run: pnpm exec wrangler whoami
+          owner=$(jq -r '.result[0].service // empty' <<<"$res")
+          if [ -n "$owner" ] && [ "$owner" != "looklab-homepage" ]; then
+            echo "::error title=looklab.space đang thuộc Worker $owner::Chuyển app sang app.looklab.space và gỡ looklab.space khỏi $owner trước (README của sunn-v/looklab)."
+            exit 1
+          fi
       - name: Deploy production
         if: github.event_name != 'pull_request'
         run: |
